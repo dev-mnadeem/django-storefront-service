@@ -1,0 +1,37 @@
+# Python environments
+project_venv/
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Node (not used, kept out defensively)
+node_modules/
+.next/
+
+# Build output
+dist/
+build/
+staticfiles/
+
+# Local configuration and data
+.env
+.env.*
+!.env.example
+db.sqlite3
+pictures/
+
+# Caches, coverage, logs, scratch
+.pytest_cache/
+.ruff_cache/
+coverage/
+htmlcov/
+.coverage
+*.log
+log/
+tmp/
+
+# Editor / OS
+.DS_Store
+.github/

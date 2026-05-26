@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load cart %}
+{% block title %}Eshop — your orders{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Your orders</h1>
+  <p>Every order you have placed, newest first.</p>
+</div>
+
+{% if orders %}
+  {% for order in orders %}
+  <div class="panel" style="margin-bottom:20px;">
+    <div class="panel__head">
+      <h2>Order #{{ order.id }}</h2>
+      <div class="summary">
+        <span>{{ order.placed_at|date:"j M Y, H:i" }}</span>
+        <span class="badge badge--{{ order.status }}">{{ order.get_status_display }}</span>
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Product</th>
+          <th class="num">Unit price</th>
+          <th class="num">Qty</th>
+          <th class="num">Line total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr>
+          <td style="width:52px; padding-right:0;">
+            {% if item.product.image %}
+              <img class="thumb" src="{{ item.product.image.url }}" alt="">
+            {% else %}
+              <span class="thumb"></span>
+            {% endif %}
+          </td>
+          <td><div class="line-name">{{ item.product.name }}</div></td>
+          <td class="num">{{ item.unit_price|currency }}</td>
+          <td class="num">{{ item.quantity }}</td>
+          <td class="num">{{ item.line_total|currency }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4">Delivered to {{ order.address }}</td>
+          <td class="num">{{ order.total_amount|currency }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="empty">
+    <h3>No orders yet</h3>
+    <p>Once you place an order it will show up here with its status.</p>
+    <a class="btn btn--ghost btn--auto" href="{% url 'index' %}">Start shopping</a>
+  </div>
+{% endif %}
+{% endblock %}

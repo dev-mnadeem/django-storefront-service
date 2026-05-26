@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Eshop — sign in{% endblock %}
+
+{% block content %}
+<div class="form-card">
+  <h1>Sign in</h1>
+  <p class="sub">Welcome back. Your cart is waiting.</p>
+
+  <form action="{% url 'login' %}" method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% for error in form.non_field_errors %}<div class="alert alert--error">{{ error }}</div>{% endfor %}
+    {% for field in form %}{% include '_form_field.html' %}{% endfor %}
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+
+  <div class="form-foot">No account yet? <a href="{% url 'signup' %}">Create one</a>.</div>
+</div>
+{% endblock %}
