@@ -6,11 +6,13 @@ import hashlib
 
 from .base import MAX_BLURB_LENGTH, Copywriter, ProductBrief
 
+# Category names are plural ("bags") or mass nouns ("footwear"), so no opener
+# conjugates a verb against them.
 OPENERS = (
-    "Everyday {category} that earns its place",
-    "Simple {category} built to be used, not admired",
+    "Everyday {category}, chosen to last",
+    "Simple {category}, built to be used rather than admired",
     "Made for people who are hard on their {category}",
-    "The {category} pick we keep restocking",
+    "A {category} pick we keep restocking",
     "Quietly good {category}, priced honestly",
 )
 
