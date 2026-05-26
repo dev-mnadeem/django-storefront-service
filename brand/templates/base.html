@@ -22,7 +22,10 @@
         </a>
         {% if is_signed_in %}
           <a href="{% url 'orders' %}">Orders</a>
-          <a href="{% url 'logout' %}">Sign out</a>
+          <form class="navform" action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Sign out</button>
+          </form>
         {% else %}
           <a href="{% url 'login' %}">Sign in</a>
           <a href="{% url 'signup' %}">Create account</a>

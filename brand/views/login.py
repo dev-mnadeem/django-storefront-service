@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
+from django.views.decorators.http import require_POST
 
 from brand.auth import REDIRECT_FIELD_NAME, safe_redirect_target
 from brand.forms import LoginForm
@@ -45,6 +46,7 @@ class Login(View):
         )
 
 
+@require_POST
 def logout(request):
     accounts.sign_out(request)
     return redirect("login")
