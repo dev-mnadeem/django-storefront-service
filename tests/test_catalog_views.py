@@ -92,3 +92,15 @@ def test_a_malformed_cart_post_changes_nothing(client, catalogue):
     response = client.post(reverse("index"), {"product_id": "boom", "action": "add"})
     assert response.status_code == 302
     assert client.session.get("cart", {}) == {}
+
+
+@pytest.mark.parametrize(
+    "hostile", ["https://evil.example.com/", "//evil.example.com/", "http://127.0.0.1:9999/"]
+)
+def test_a_cart_post_never_redirects_off_site(client, catalogue, hostile):
+    product = catalogue["shoes"].products.first()
+    response = client.post(
+        reverse("index"), {"product_id": product.id, "action": "add", "return_to": hostile}
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"] == reverse("index")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import wraps
+from urllib.parse import urlencode
 
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -39,7 +40,8 @@ def customer_required(view):
     def wrapper(request, *args, **kwargs):
         if current_customer_id(request) is None:
             login_url = reverse("login")
-            return redirect(f"{login_url}?{REDIRECT_FIELD_NAME}={request.get_full_path()}")
+            query = urlencode({REDIRECT_FIELD_NAME: request.get_full_path()}, safe="/")
+            return redirect(f"{login_url}?{query}")
         return view(request, *args, **kwargs)
 
     return wrapper

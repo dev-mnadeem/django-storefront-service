@@ -1,3 +1,5 @@
+from urllib.parse import parse_qs
+
 import pytest
 from django.urls import reverse
 
@@ -80,3 +82,10 @@ def test_signed_in_shoppers_reach_their_orders(signed_in_client):
 def test_logout_clears_the_session(signed_in_client):
     signed_in_client.get(reverse("logout"))
     assert "customer" not in signed_in_client.session
+
+
+def test_the_login_redirect_keeps_the_whole_query_string(client, db):
+    response = client.get(reverse("orders"), {"page": 2, "q": "a&b"})
+    login, _, query = response.headers["Location"].partition("?")
+    assert login == reverse("login")
+    assert parse_qs(query) == {"next": ["/orders/?page=2&q=a%26b"]}

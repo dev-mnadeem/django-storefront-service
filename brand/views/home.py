@@ -1,6 +1,8 @@
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views import View
 
+from brand.auth import safe_redirect_target
 from brand.forms import CartUpdateForm
 from brand.services.cart import Cart
 from brand.services.catalog import categories_with_counts, paginate, search_products
@@ -45,4 +47,7 @@ class Index(View):
                 cart.remove_one(product_id)
             else:
                 cart.discard(product_id)
-        return redirect(request.POST.get("return_to") or "index")
+        # `return_to` comes from a hidden field, so it is as untrusted as `?next=`.
+        return redirect(
+            safe_redirect_target(request, request.POST.get("return_to"), reverse("index"))
+        )
