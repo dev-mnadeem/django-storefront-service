@@ -1,5 +1,9 @@
+import logging
+
 from django.db import connection
 from django.http import JsonResponse
+
+logger = logging.getLogger(__name__)
 
 
 def healthz(request):
@@ -8,9 +12,8 @@ def healthz(request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
             cursor.fetchone()
-    except Exception as exc:  # noqa: BLE001 - the endpoint reports, never raises
-        return JsonResponse(
-            {"status": "error", "database": "unavailable", "detail": str(exc)},
-            status=503,
-        )
+    except Exception:  # noqa: BLE001 - the endpoint reports, never raises
+        # The driver message can name hosts and paths; it goes to the log only.
+        logger.exception("Health check could not reach the database")
+        return JsonResponse({"status": "error", "database": "unavailable"}, status=503)
     return JsonResponse({"status": "ok", "database": "ok"})

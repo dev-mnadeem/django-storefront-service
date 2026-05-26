@@ -37,3 +37,14 @@ def test_an_unknown_url_renders_the_custom_404(client, db, settings):
     response = client.get("/no-such-page/")
     assert response.status_code == 404
     assert b"that page does not exist" in response.content
+
+
+def test_healthz_returns_503_without_leaking_the_driver_error(client, db, monkeypatch):
+    class _BrokenConnection:
+        def cursor(self):
+            raise RuntimeError("could not open /secret/path/db.sqlite3")
+
+    monkeypatch.setattr("brand.views.health.connection", _BrokenConnection())
+    response = client.get(reverse("healthz"))
+    assert response.status_code == 503
+    assert response.json() == {"status": "error", "database": "unavailable"}
