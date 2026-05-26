@@ -1,8 +1,10 @@
 """Populate the storefront with a browsable demo catalogue.
 
 Everything this creates is fake and idempotent: running it twice leaves the
-same rows. Product images are drawn locally with Pillow so the command needs no
-network and ships no third-party artwork.
+same rows. Products that already exist keep their price and stock, because
+Compose runs this on every container start and a restart must not undo the
+sales and admin edits made since. Product images are drawn locally with
+Pillow, so the command needs no network and ships no third-party artwork.
 """
 
 from __future__ import annotations
@@ -131,21 +133,17 @@ class Command(BaseCommand):
         for category_name, rows in CATALOGUE.items():
             category, _ = Category.objects.get_or_create(name=category_name)
             for product_name, price, stock in rows:
-                product, created = Product.objects.get_or_create(
+                product, _ = Product.objects.get_or_create(
                     name=product_name,
-                    defaults={
-                        "category": category,
-                        "price": price,
-                        "stock": stock,
-                    },
+                    defaults={"category": category, "price": price, "stock": stock},
                 )
-                if not created:
-                    product.category = category
-                    product.price = price
-                    product.stock = stock
                 if not product.desc:
                     product.desc = copywriter.write_blurb(
-                        ProductBrief(name=product_name, category=category_name, price=price)
+                        ProductBrief(
+                            name=product_name,
+                            category=product.category.name,
+                            price=product.price,
+                        )
                     )
                 if not options["no_images"] and not product.image:
                     product.image.save(
