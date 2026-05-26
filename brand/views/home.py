@@ -1,10 +1,11 @@
+from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
 
 from brand.auth import safe_redirect_target
 from brand.forms import CartUpdateForm
-from brand.services.cart import Cart
+from brand.services.cart import Cart, CartError
 from brand.services.catalog import categories_with_counts, paginate, search_products
 
 
@@ -42,7 +43,10 @@ class Index(View):
             product_id = form.cleaned_data["product_id"]
             action = form.cleaned_data["action"]
             if action == "add":
-                cart.add(product_id)
+                try:
+                    cart.add_available(product_id)
+                except CartError as exc:
+                    messages.error(request, str(exc))
             elif action == "remove":
                 cart.remove_one(product_id)
             else:

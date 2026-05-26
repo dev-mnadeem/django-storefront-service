@@ -16,6 +16,10 @@ from brand.models.product import Product
 SESSION_KEY = "cart"
 
 
+class CartError(Exception):
+    """A cart change was refused. The message is safe to show a shopper."""
+
+
 @dataclass(frozen=True)
 class CartLine:
     product: Product
@@ -72,6 +76,20 @@ class Cart:
             self.raw[key] = new_quantity
         self._save()
         return new_quantity
+
+    def add_available(self, product_id) -> int:
+        """Add one unit of a product that exists, never beyond its stock.
+
+        `add` trusts its caller; this is the entry point for shopper input,
+        where the id comes from a form field and stock may have run out
+        since the page was rendered.
+        """
+        product = Product.objects.filter(id=product_id).only("name", "stock").first()
+        if product is None:
+            raise CartError("That product is no longer available.")
+        if self.quantity_of(product_id) >= product.stock:
+            raise CartError(f"Only {product.stock} of {product.name} in stock.")
+        return self.add(product_id)
 
     def remove_one(self, product_id) -> int:
         return self.add(product_id, delta=-1)

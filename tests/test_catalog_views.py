@@ -104,3 +104,18 @@ def test_a_cart_post_never_redirects_off_site(client, catalogue, hostile):
     )
     assert response.status_code == 302
     assert response.headers["Location"] == reverse("index")
+
+
+def test_an_unknown_product_id_does_not_reach_the_cart(client, catalogue):
+    client.post(reverse("index"), {"product_id": 999999, "action": "add"})
+    assert client.session.get("cart", {}) == {}
+
+
+def test_the_add_button_stops_at_the_stock_level(client, catalogue):
+    product = catalogue["shoes"].products.first()  # stock=4
+    for _ in range(6):
+        response = client.post(
+            reverse("index"), {"product_id": product.id, "action": "add"}, follow=True
+        )
+    assert client.session["cart"] == {str(product.id): 4}
+    assert b"Only 4 of" in response.content
