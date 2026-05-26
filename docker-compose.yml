@@ -1,7 +1,6 @@
 services:
   web:
     build: .
-    image: eshop-storefront
     # 7181-7189 is this project's reserved host range.
     ports:
       - "7182:8000"

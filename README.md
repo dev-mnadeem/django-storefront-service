@@ -166,10 +166,8 @@ kind of chore a model is good at. `brand/ai/` puts that behind one interface:
 ```python
 from brand.ai import ProductBrief, get_copywriter
 
-copywriter = get_copywriter()                    # honours COPYWRITER_BACKEND
-copywriter.write_blurb(ProductBrief(name="Trail Runner GT",
-                                    category="Footwear",
-                                    price=8400))
+copywriter = get_copywriter()  # honours COPYWRITER_BACKEND
+copywriter.write_blurb(ProductBrief(name="Trail Runner GT", category="Footwear", price=8400))
 ```
 
 `COPYWRITER_BACKEND=local` (the default) generates the blurb from a hash of the

@@ -2,11 +2,11 @@
 name = "eshop"
 version = "1.0.0"
 description = "A server-rendered Django storefront: catalogue, cart, checkout, orders."
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 
 [tool.ruff]
 line-length = 96
-target-version = "py311"
+target-version = "py312"
 extend-exclude = ["brand/migrations", ".venv", "staticfiles"]
 
 [tool.ruff.lint]
