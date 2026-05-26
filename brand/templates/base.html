@@ -4,24 +4,32 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Eshop{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="{% static 'brand/storefront.css' %}">
 </head>
 <body>
+  <a class="skip-link" href="#content">Skip to content</a>
   <header class="masthead">
     <div class="shell masthead__inner">
       <a class="wordmark" href="{% url 'index' %}">E<span>shop</span></a>
 
       <form class="search" action="{% url 'index' %}" method="get" role="search">
-        <input type="search" name="q" value="{{ query|default:'' }}"
-               placeholder="Search products" aria-label="Search products">
+        <label class="visually-hidden" for="site-search">Search products</label>
+        <input id="site-search" type="search" name="q" value="{{ query|default:'' }}"
+               placeholder="Search products">
       </form>
 
-      <nav class="navlinks">
-        <a class="cart-link" href="{% url 'cart' %}">Cart
-          <span class="pill{% if not cart_item_count %} pill--muted{% endif %}">{{ cart_item_count }}</span>
+      {% url 'cart' as cart_url %}{% url 'orders' as orders_url %}
+      <nav class="navlinks" aria-label="Account">
+        <a class="cart-link" href="{{ cart_url }}"{% if request.path == cart_url %} aria-current="page"{% endif %}>Cart
+          <span class="pill{% if not cart_item_count %} pill--muted{% endif %}">
+            {{ cart_item_count }}<span class="visually-hidden"> item{{ cart_item_count|pluralize }}</span>
+          </span>
         </a>
         {% if is_signed_in %}
-          <a href="{% url 'orders' %}">Orders</a>
+          <a href="{{ orders_url }}"{% if request.path == orders_url %} aria-current="page"{% endif %}>Orders</a>
           <form class="navform" action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <button type="submit">Sign out</button>
@@ -34,9 +42,9 @@
     </div>
   </header>
 
-  <main class="shell">
+  <main class="shell" id="content">
     {% if messages %}
-      <div class="flashes">
+      <div class="flashes" role="status">
         {% for message in messages %}
           <div class="alert alert--{% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
         {% endfor %}
@@ -46,7 +54,7 @@
   </main>
 
   <footer class="site">
-    <div class="shell">Eshop — a Django storefront demo. Catalogue data is fictional.</div>
+    <div class="shell">Eshop: a Django storefront demo. Catalogue data is fictional.</div>
   </footer>
 </body>
 </html>

@@ -9,22 +9,23 @@
 </div>
 
 <div class="columns">
-  <aside class="facets">
+  <nav class="facets" aria-label="Categories">
     <h2>Categories</h2>
-    <a class="facet{% if not selected_category %} is-active{% endif %}"
+    <a class="facet"{% if not selected_category %} aria-current="page"{% endif %}
        href="{% url 'index' %}{% if query %}?q={{ query|urlencode }}{% endif %}">
       All products
     </a>
     {% for category in categories %}
-      <a class="facet{% if selected_category == category.id|stringformat:'s' %} is-active{% endif %}"
+      <a class="facet"{% if selected_category == category.id|stringformat:'s' %} aria-current="page"{% endif %}
          href="{% url 'index' %}?category={{ category.id }}{% if query %}&q={{ query|urlencode }}{% endif %}">
         <span>{{ category.name }}</span>
         <span class="facet__count">{{ category.product_count }}</span>
       </a>
     {% endfor %}
-  </aside>
+  </nav>
 
-  <section>
+  <section aria-labelledby="products-heading">
+    <h2 class="visually-hidden" id="products-heading">Products</h2>
     {% if products %}
       <div class="grid">
         {% for product in products %}
@@ -44,6 +45,7 @@
             </div>
 
             <div class="card__body">
+              <p class="card__category">{{ product.category.name }}</p>
               <h3 class="card__name">{{ product.name }}</h3>
               <p class="card__desc">{{ product.desc }}</p>
               <div class="card__price">{{ product.price|currency }}</div>
@@ -76,7 +78,7 @@
                   <input type="hidden" name="product_id" value="{{ product.id }}">
                   <input type="hidden" name="action" value="add">
                   <input type="hidden" name="return_to" value="{{ request.get_full_path }}#product-{{ product.id }}">
-                  <button class="btn" type="submit">Add to cart</button>
+                  <button class="btn" type="submit">Add to cart<span class="visually-hidden">: {{ product.name }}</span></button>
                 </form>
               {% endif %}
             </div>
@@ -86,7 +88,7 @@
       </div>
 
       {% if page.paginator.num_pages > 1 %}
-        <nav class="pager">
+        <nav class="pager" aria-label="Catalogue pages">
           {% if page.has_previous %}
             <a class="pager__step" href="?{% if query %}q={{ query|urlencode }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page.previous_page_number }}">Previous</a>
           {% endif %}
@@ -98,7 +100,7 @@
       {% endif %}
     {% else %}
       <div class="empty">
-        <h3>Nothing matches that</h3>
+        <h2>Nothing matches that</h2>
         <p>{% if query %}No product name contains “{{ query }}”.{% else %}This category has no products yet.{% endif %}</p>
         <a class="btn btn--ghost btn--auto" href="{% url 'index' %}">Clear filters</a>
       </div>

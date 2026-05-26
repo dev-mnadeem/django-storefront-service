@@ -10,19 +10,19 @@
 
 {% if cart.is_empty %}
   <div class="empty">
-    <h3>Your cart is empty</h3>
+    <h2>Your cart is empty</h2>
     <p>Browse the catalogue and add something to get started.</p>
     <a class="btn btn--ghost btn--auto" href="{% url 'index' %}">Back to the catalogue</a>
   </div>
 {% else %}
-<div class="columns" style="grid-template-columns: 1fr 340px;">
+<div class="columns columns--checkout">
   <div class="panel">
     <div class="panel__head"><h2>Items</h2></div>
     <table>
       <thead>
         <tr>
           <th colspan="2">Product</th>
-          <th class="num">Unit price</th>
+          <th class="num col-unit">Unit price</th>
           <th class="num">Qty</th>
           <th class="num">Line total</th>
         </tr>
@@ -30,7 +30,7 @@
       <tbody>
         {% for line in cart.lines %}
         <tr>
-          <td style="width:52px; padding-right:0;">
+          <td class="cell-thumb">
             {% if line.product.image %}
               <img class="thumb" src="{{ line.product.image.url }}" alt="">
             {% else %}
@@ -41,7 +41,7 @@
             <div class="line-name">{{ line.product.name }}</div>
             <div class="line-meta">{{ line.product.category.name }}</div>
           </td>
-          <td class="num">{{ line.product.price|currency }}</td>
+          <td class="num col-unit">{{ line.product.price|currency }}</td>
           <td class="num">{{ line.quantity }}</td>
           <td class="num">{{ line.line_total|currency }}</td>
         </tr>
@@ -49,7 +49,9 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="4">Total</td>
+          <td colspan="2">Total</td>
+          <td class="col-unit"></td>
+          <td></td>
           <td class="num">{{ cart.total|currency }}</td>
         </tr>
       </tfoot>

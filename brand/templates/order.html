@@ -10,11 +10,11 @@
 
 {% if orders %}
   {% for order in orders %}
-  <div class="panel" style="margin-bottom:20px;">
+  <section class="panel order" aria-labelledby="order-{{ order.id }}">
     <div class="panel__head">
-      <h2>Order #{{ order.id }}</h2>
+      <h2 id="order-{{ order.id }}">Order #{{ order.id }}</h2>
       <div class="summary">
-        <span>{{ order.placed_at|date:"j M Y, H:i" }}</span>
+        <time datetime="{{ order.placed_at|date:'c' }}">{{ order.placed_at|date:"j M Y, H:i" }}</time>
         <span class="badge badge--{{ order.status }}">{{ order.get_status_display }}</span>
       </div>
     </div>
@@ -22,7 +22,7 @@
       <thead>
         <tr>
           <th colspan="2">Product</th>
-          <th class="num">Unit price</th>
+          <th class="num col-unit">Unit price</th>
           <th class="num">Qty</th>
           <th class="num">Line total</th>
         </tr>
@@ -30,7 +30,7 @@
       <tbody>
         {% for item in order.items.all %}
         <tr>
-          <td style="width:52px; padding-right:0;">
+          <td class="cell-thumb">
             {% if item.product.image %}
               <img class="thumb" src="{{ item.product.image.url }}" alt="">
             {% else %}
@@ -38,7 +38,7 @@
             {% endif %}
           </td>
           <td><div class="line-name">{{ item.product.name }}</div></td>
-          <td class="num">{{ item.unit_price|currency }}</td>
+          <td class="num col-unit">{{ item.unit_price|currency }}</td>
           <td class="num">{{ item.quantity }}</td>
           <td class="num">{{ item.line_total|currency }}</td>
         </tr>
@@ -46,16 +46,18 @@
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="4">Delivered to {{ order.address }}</td>
+          <td colspan="2">Delivered to {{ order.address }}</td>
+          <td class="col-unit"></td>
+          <td></td>
           <td class="num">{{ order.total_amount|currency }}</td>
         </tr>
       </tfoot>
     </table>
-  </div>
+  </section>
   {% endfor %}
 {% else %}
   <div class="empty">
-    <h3>No orders yet</h3>
+    <h2>No orders yet</h2>
     <p>Once you place an order it will show up here with its status.</p>
     <a class="btn btn--ghost btn--auto" href="{% url 'index' %}">Start shopping</a>
   </div>

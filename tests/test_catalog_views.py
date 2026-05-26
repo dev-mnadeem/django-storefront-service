@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from django.urls import reverse
 
@@ -119,3 +121,10 @@ def test_the_add_button_stops_at_the_stock_level(client, catalogue):
         )
     assert client.session["cart"] == {str(product.id): 4}
     assert b"Only 4 of" in response.content
+
+
+def test_the_selected_category_is_announced_to_assistive_tech(client, catalogue):
+    bags = catalogue["bags"]
+    html = client.get(reverse("index"), {"category": bags.id}).content.decode()
+    current = re.findall(r'<a class="facet" aria-current="page"\s+href="([^"]+)"', html)
+    assert current == [f"/?category={bags.id}"]
