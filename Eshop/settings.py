@@ -44,12 +44,15 @@ _load_dotenv()
 
 DEBUG = env_bool("DJANGO_DEBUG", False)
 
-# In DEBUG a throwaway key keeps `manage.py runserver` usable with no setup.
-# Outside DEBUG the key must come from the environment or the app refuses to boot.
+# DEV-ONLY FALLBACK, NOT A SECRET: in DEBUG a public placeholder key keeps
+# `manage.py runserver` usable with no setup. Anything signed with it can be
+# forged by anyone who reads this file, which is why it is never used outside
+# DEBUG: there the key must come from the environment or the app refuses to boot.
+DEV_ONLY_SECRET_KEY = "django-insecure-development-only-do-not-use-in-production"
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
     if DEBUG:
-        SECRET_KEY = "django-insecure-development-only-do-not-use-in-production"
+        SECRET_KEY = DEV_ONLY_SECRET_KEY
     else:
         raise ImproperlyConfigured(
             "DJANGO_SECRET_KEY must be set when DJANGO_DEBUG is off. "

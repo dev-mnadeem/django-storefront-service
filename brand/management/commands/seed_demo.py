@@ -23,6 +23,9 @@ from brand.models.order import Order, OrderItem, OrderStatus
 from brand.models.product import Product
 from brand.services.accounts import register
 
+# DEMO CREDENTIALS, NOT A SECRET: the seeded shopper's login is published in
+# the README so anyone trying the storefront can sign in. Never seed a
+# deployment that real customers use.
 DEMO_EMAIL = "demo@example.com"
 DEMO_PASSWORD = "demo-password"
 
