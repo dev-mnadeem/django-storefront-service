@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load cart %}
+{% block title %}Eshop — catalogue{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>{% if query %}Results for “{{ query }}”{% else %}Catalogue{% endif %}</h1>
+  <p>{{ page.paginator.count }} product{{ page.paginator.count|pluralize }} available.</p>
+</div>
+
+<div class="columns">
+  <aside class="facets">
+    <h2>Categories</h2>
+    <a class="facet{% if not selected_category %} is-active{% endif %}"
+       href="{% url 'index' %}{% if query %}?q={{ query|urlencode }}{% endif %}">
+      All products
+    </a>
+    {% for category in categories %}
+      <a class="facet{% if selected_category == category.id|stringformat:'s' %} is-active{% endif %}"
+         href="{% url 'index' %}?category={{ category.id }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+        <span>{{ category.name }}</span>
+        <span class="facet__count">{{ category.product_count }}</span>
+      </a>
+    {% endfor %}
+  </aside>
+
+  <section>
+    {% if products %}
+      <div class="grid">
+        {% for product in products %}
+          {% with quantity=product|cart_quantity:cart_quantities %}
+          <article class="card" id="product-{{ product.id }}">
+            <div class="card__media{% if not product.image %} card__media--empty{% endif %}">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+              {% else %}
+                <span>No image</span>
+              {% endif %}
+              {% if not product.is_in_stock %}
+                <span class="flag flag--out">Out of stock</span>
+              {% elif product.stock <= 10 %}
+                <span class="flag flag--low">Only {{ product.stock }} left</span>
+              {% endif %}
+            </div>
+
+            <div class="card__body">
+              <h3 class="card__name">{{ product.name }}</h3>
+              <p class="card__desc">{{ product.desc }}</p>
+              <div class="card__price">{{ product.price|currency }}</div>
+            </div>
+
+            <div class="card__foot">
+              {% if not product.is_in_stock %}
+                <button class="btn" type="button" disabled>Out of stock</button>
+              {% elif quantity %}
+                <div class="stepper">
+                  <form action="{% url 'index' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="action" value="remove">
+                    <input type="hidden" name="return_to" value="{{ request.get_full_path }}#product-{{ product.id }}">
+                    <button type="submit" aria-label="Remove one {{ product.name }}">−</button>
+                  </form>
+                  <span class="stepper__count">{{ quantity }} in cart</span>
+                  <form action="{% url 'index' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="return_to" value="{{ request.get_full_path }}#product-{{ product.id }}">
+                    <button type="submit" aria-label="Add one {{ product.name }}">+</button>
+                  </form>
+                </div>
+              {% else %}
+                <form action="{% url 'index' %}" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="product_id" value="{{ product.id }}">
+                  <input type="hidden" name="action" value="add">
+                  <input type="hidden" name="return_to" value="{{ request.get_full_path }}#product-{{ product.id }}">
+                  <button class="btn" type="submit">Add to cart</button>
+                </form>
+              {% endif %}
+            </div>
+          </article>
+          {% endwith %}
+        {% endfor %}
+      </div>
+
+      {% if page.paginator.num_pages > 1 %}
+        <nav class="pager">
+          {% if page.has_previous %}
+            <a class="pager__step" href="?{% if query %}q={{ query|urlencode }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page.previous_page_number }}">Previous</a>
+          {% endif %}
+          <span class="pager__at">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+          {% if page.has_next %}
+            <a class="pager__step" href="?{% if query %}q={{ query|urlencode }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ page.next_page_number }}">Next</a>
+          {% endif %}
+        </nav>
+      {% endif %}
+    {% else %}
+      <div class="empty">
+        <h3>Nothing matches that</h3>
+        <p>{% if query %}No product name contains “{{ query }}”.{% else %}This category has no products yet.{% endif %}</p>
+        <a class="btn btn--ghost btn--auto" href="{% url 'index' %}">Clear filters</a>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
