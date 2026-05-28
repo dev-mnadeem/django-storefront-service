@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Eshop — create an account{% endblock %}
+
+{% block content %}
+<div class="form-card">
+  <h1>Create an account</h1>
+  <p class="sub">You need an account to check out and to see your order history.</p>
+
+  <form action="{% url 'signup' %}" method="post" novalidate>
+    {% csrf_token %}
+    {% for error in form.non_field_errors %}<div class="alert alert--error">{{ error }}</div>{% endfor %}
+    {% for field in form %}{% include '_form_field.html' %}{% endfor %}
+    <button class="btn" type="submit">Create account</button>
+  </form>
+
+  <div class="form-foot">Already registered? <a href="{% url 'login' %}">Sign in</a>.</div>
+</div>
+{% endblock %}
