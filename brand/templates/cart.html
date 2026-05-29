@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load cart %}
+{% block title %}Eshop — your cart{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Your cart</h1>
+  <p>{{ cart.item_count }} item{{ cart.item_count|pluralize }} across {{ cart.lines|length }} product{{ cart.lines|length|pluralize }}.</p>
+</div>
+
+{% if cart.is_empty %}
+  <div class="empty">
+    <h3>Your cart is empty</h3>
+    <p>Browse the catalogue and add something to get started.</p>
+    <a class="btn btn--ghost btn--auto" href="{% url 'index' %}">Back to the catalogue</a>
+  </div>
+{% else %}
+<div class="columns" style="grid-template-columns: 1fr 340px;">
+  <div class="panel">
+    <div class="panel__head"><h2>Items</h2></div>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Product</th>
+          <th class="num">Unit price</th>
+          <th class="num">Qty</th>
+          <th class="num">Line total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for line in cart.lines %}
+        <tr>
+          <td style="width:52px; padding-right:0;">
+            {% if line.product.image %}
+              <img class="thumb" src="{{ line.product.image.url }}" alt="">
+            {% else %}
+              <span class="thumb"></span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="line-name">{{ line.product.name }}</div>
+            <div class="line-meta">{{ line.product.category.name }}</div>
+          </td>
+          <td class="num">{{ line.product.price|currency }}</td>
+          <td class="num">{{ line.quantity }}</td>
+          <td class="num">{{ line.line_total|currency }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4">Total</td>
+          <td class="num">{{ cart.total|currency }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="panel">
+    <div class="panel__head"><h2>Checkout</h2></div>
+    <div class="panel__body">
+      <form action="{% url 'checkout' %}" method="post">
+        {% csrf_token %}
+        {% for field in checkout_form %}{% include '_form_field.html' %}{% endfor %}
+        <button class="btn" type="submit">Place order — {{ cart.total|currency }}</button>
+      </form>
+      <div class="form-foot">Prices are re-checked against the catalogue when the order is placed.</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
