@@ -1,0 +1,49 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Eshop{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'brand/storefront.css' %}">
+</head>
+<body>
+  <header class="masthead">
+    <div class="shell masthead__inner">
+      <a class="wordmark" href="{% url 'index' %}">E<span>shop</span></a>
+
+      <form class="search" action="{% url 'index' %}" method="get" role="search">
+        <input type="search" name="q" value="{{ query|default:'' }}"
+               placeholder="Search products" aria-label="Search products">
+      </form>
+
+      <nav class="navlinks">
+        <a class="cart-link" href="{% url 'cart' %}">Cart
+          <span class="pill{% if not cart_item_count %} pill--muted{% endif %}">{{ cart_item_count }}</span>
+        </a>
+        {% if is_signed_in %}
+          <a href="{% url 'orders' %}">Orders</a>
+          <a href="{% url 'logout' %}">Sign out</a>
+        {% else %}
+          <a href="{% url 'login' %}">Sign in</a>
+          <a href="{% url 'signup' %}">Create account</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    {% if messages %}
+      <div class="flashes">
+        {% for message in messages %}
+          <div class="alert alert--{% if message.tags == 'error' %}error{% else %}success{% endif %}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site">
+    <div class="shell">Eshop — a Django storefront demo. Catalogue data is fictional.</div>
+  </footer>
+</body>
+</html>
