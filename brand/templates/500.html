@@ -1,0 +1,20 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eshop — something broke</title>
+  <link rel="stylesheet" href="{% static 'brand/storefront.css' %}">
+</head>
+<body>
+  {# Standalone on purpose: a 500 may mean the database is down, so this page #}
+  {# must not depend on context processors or template tags that query it.   #}
+  <main class="shell" style="padding-top:64px;">
+    <div class="empty">
+      <h3>500 — something went wrong on our side</h3>
+      <p>The error has been logged. Please try again in a moment.</p>
+      <a class="btn btn--ghost btn--auto" href="/">Back to the catalogue</a>
+    </div>
+  </main>
+</body>
+</html>
