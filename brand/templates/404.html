@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Eshop — page not found{% endblock %}
+{% block content %}
+<div class="empty">
+  <h3>404 — that page does not exist</h3>
+  <p>The link may be outdated, or the product may have been removed.</p>
+  <a class="btn btn--ghost btn--auto" href="{% url 'index' %}">Back to the catalogue</a>
+</div>
+{% endblock %}
