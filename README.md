@@ -250,3 +250,7 @@ the container path as unverified.
   integration, no transition rules between statuses.
 - No cache layer. At this data size every page is a handful of indexed queries,
   and adding Redis would be decoration rather than a fix.
+
+## Author
+
+[**Muhammad Nadeem**](https://github.com/dev-mnadeem)
