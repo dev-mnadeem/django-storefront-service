@@ -1,0 +1,32 @@
+[project]
+name = "eshop"
+version = "1.0.0"
+description = "A server-rendered Django storefront: catalogue, cart, checkout, orders."
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 96
+target-version = "py311"
+extend-exclude = ["brand/migrations", ".venv", "staticfiles"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "DJ", "SIM", "RET", "ARG", "BLE"]
+ignore = [
+    "DJ001",  # null=True on a text field: not used in this schema
+    "ARG002", # Django passes `request`/`exception` to hooks that ignore them
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ARG001", "ARG002"]
+# Django dictates these signatures; the unused parameters are part of the contract.
+"brand/views/errors.py" = ["ARG001"]
+"brand/views/health.py" = ["ARG001"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "Eshop.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+addopts = "-q"
