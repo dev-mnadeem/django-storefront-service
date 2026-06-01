@@ -1,0 +1,36 @@
+services:
+  web:
+    build: .
+    image: eshop-storefront
+    # 7181-7189 is this project's reserved host range.
+    ports:
+      - "7182:8000"
+    environment:
+      DJANGO_DEBUG: "false"
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env before starting}"
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DJANGO_CSRF_TRUSTED_ORIGINS: "http://localhost:7182"
+      DJANGO_SECURE_COOKIES: "false"
+      DJANGO_DB_PATH: "/app/data/db.sqlite3"
+      DJANGO_MEDIA_ROOT: "/app/pictures"
+      COPYWRITER_BACKEND: "${COPYWRITER_BACKEND:-local}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+    volumes:
+      # SQLite and uploaded product images must outlive the container.
+      - eshop-data:/app/data
+      - eshop-media:/app/pictures
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py seed_demo &&
+             gunicorn Eshop.wsgi:application --bind 0.0.0.0:8000 --workers 3 --access-logfile -"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  eshop-data:
+  eshop-media:
